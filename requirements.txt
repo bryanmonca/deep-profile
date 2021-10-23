@@ -1,0 +1,6 @@
+torch==1.10.0
+torchvision==0.11.1
+torch_tb_profiler==0.3.1
+jupyter==1.0.0
+matplotlib==3.3.4
+ipykernel==5.5.6

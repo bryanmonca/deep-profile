@@ -1,0 +1,4 @@
+*.json
+data/*
+log/*
+.ipynb_checkpoints/*
