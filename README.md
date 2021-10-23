@@ -11,7 +11,7 @@ git clone https://github.com/bryanmonca/deep-profile.git
 
 virtualenv -p /usr/bin/python3.6 venv
 . venv/bin/activate
-pip install -r requirements.txt
+pip install -r deep-profile/requirements.txt
 ipython kernel install --user --name=venv
 ```
 
