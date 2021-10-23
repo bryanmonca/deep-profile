@@ -3,6 +3,8 @@
 
 ## Setup on X2GO remote desktop
 
+Login with X2GO. Open a new terminal.
+
 ```
 git clone https://github.com/bryanmonca/deep-profile.git
 
@@ -16,17 +18,15 @@ ipython kernel install --user --name=venv
 
 ### Launch Jupyter Notebook
 
-Use a different port is the default one is occupied.
-
 ```
 jupyter notebook --port=8892
 ```
 
-Go to browser, and select "Kernel/Change kernek/venv"
+IMPORTANT: in juypter notebook IDE, select "Kernel/Change kernek/venv"
 
+Use a different port if the default one is occupied.
 
-Now you should be able to run the notebook
-
+Now you should be able to run the notebook.
 
 ### Launch Tensorboard
 
@@ -38,7 +38,6 @@ tensorboard --logdir log --port 8893
 ```
 
 Open a browser and go to
-
 
 ```
 localhost:8893
