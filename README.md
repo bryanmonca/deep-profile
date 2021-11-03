@@ -60,7 +60,7 @@ Then on your local machine, open a browser and go to `http://localhost:8895`
 
 ## Setup VS Code
 
-### Preparikng
+### Preparing
 1. Download SSH, Python, and Jupiter extensions in VS Code
 2. Log into the machine using SSH extension in VS Code (find the Remote Explorer Icon on the left side)
 
