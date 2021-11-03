@@ -68,11 +68,10 @@ Then on your local machine, open a browser and go to `http://localhost:8895`
 3. Open a Terminal outside VS Code and log into the machine using ssh
 4. Go into your virtual environment and open jupyter notebook using `jupyter notebook --port=8892`
 5. Open the Command Palette (Cmd+Shift+P) and write 'remote' (to find “Jupiter: Specify local or remote Jupiter server for connections”)
-6. Go to the right lower corner and click on "Jupyter Server: Remote"
-7. Click on Existing and Confirm that the URI is the same that shows up on the terminal
-8. Open a notebook (Go to File, Open, and find your notebook)
-9. Change the kernel at right upper corner (“Select Kernel”) with your virtualenv
-10. Run the notebook
+6. Click on Existing and Confirm that the URI is the same that shows up on the terminal
+7. Open a notebook (Go to File, Open, and find your notebook)
+8. Change the kernel at right upper corner (“Select Kernel”) with your virtualenv
+9. Run the notebook
 
 ### Setting up Tensorboard in VS Code
 10. Open a new Terminal outside VS Code and log into the machine using ssh 
