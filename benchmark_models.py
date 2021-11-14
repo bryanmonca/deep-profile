@@ -31,6 +31,8 @@ MODEL_LIST = {
     # models.shufflenetv2: models.shufflenetv2.__all__[1:],
 }
 
+black_list = ["resnext101_32x8d"]
+
 # For post-voltaic architectures, there is a possibility to use tensor-core at half precision.
 # Due to the gradient overflow problem, apex is recommended for practical use.
 device_name = str(torch.cuda.get_device_name(0))
@@ -103,37 +105,38 @@ def train(precision="float", profile=False):
     benchmark = {}
     for model_type in MODEL_LIST.keys():
         for model_name in MODEL_LIST[model_type]:
-            model = getattr(model_type, model_name)(pretrained=False)
-            if args.NUM_GPU > 1:
-                model = nn.DataParallel(model, device_ids=range(args.NUM_GPU))
-            model = getattr(model, precision)()
-            model = model.to("cuda")
-            
-            print(f"Benchmarking Training {precision} precision type {model_name} ")
+            if model_name not in black_list:
+                model = getattr(model_type, model_name)(pretrained=False)
+                if args.NUM_GPU > 1:
+                    model = nn.DataParallel(model, device_ids=range(args.NUM_GPU))
+                model = getattr(model, precision)()
+                model = model.to("cuda")
+                
+                print(f"Benchmarking Training {precision} precision type {model_name} ")
 
-            if profile:
-                path_log = './' + args.folder + '/' + model_name + '/train/' + precision + '/stack_memory'
-                Path(path_log).mkdir(parents=True, exist_ok=True)
-                with torch.profiler.profile(
-                    activities=[
-                        torch.profiler.ProfilerActivity.CPU,
-                        torch.profiler.ProfilerActivity.CUDA],
-                    schedule=torch.profiler.schedule(
-                        wait=0, # skip first few training steps
-                        warmup=args.WARM_UP, # reach steady and skip few layers, profiling happens ignores results
-                        active=args.NUM_TEST), # only profile NUM_TEST steps - allows to focus and skip some layers for reducing overhead(even in prod)
-                    on_trace_ready=torch.profiler.tensorboard_trace_handler(path_log),
-                    record_shapes=True,
-                    profile_memory=True,
-                    with_stack=True
-                ) as p:
-                    durations = train_steps(model, precision, criterion, target, p)
-            else:
-                durations = train_steps(model, precision, criterion, target)
-            
-            del model
-            benchmark[model_name] = durations
-            print(f"{model_name} model average train time : {sum(durations)/len(durations)}ms")
+                if profile:
+                    path_log = './' + args.folder + '/' + model_name + '/train/' + precision + '/stack_memory'
+                    Path(path_log).mkdir(parents=True, exist_ok=True)
+                    with torch.profiler.profile(
+                        activities=[
+                            torch.profiler.ProfilerActivity.CPU,
+                            torch.profiler.ProfilerActivity.CUDA],
+                        schedule=torch.profiler.schedule(
+                            wait=0, # skip first few training steps
+                            warmup=args.WARM_UP, # reach steady and skip few layers, profiling happens ignores results
+                            active=args.NUM_TEST), # only profile NUM_TEST steps - allows to focus and skip some layers for reducing overhead(even in prod)
+                        on_trace_ready=torch.profiler.tensorboard_trace_handler(path_log),
+                        record_shapes=True,
+                        profile_memory=True,
+                        with_stack=True
+                    ) as p:
+                        durations = train_steps(model, precision, criterion, target, p)
+                else:
+                    durations = train_steps(model, precision, criterion, target)
+                
+                del model
+                benchmark[model_name] = durations
+                print(f"{model_name} model average train time : {sum(durations)/len(durations)}ms")
 
     return benchmark
 
@@ -159,38 +162,39 @@ def inference(precision="float", profile=False):
     with torch.no_grad():
         for model_type in MODEL_LIST.keys():
             for model_name in MODEL_LIST[model_type]:
-                model = getattr(model_type, model_name)(pretrained=False)
-                if args.NUM_GPU > 1:
-                    model = nn.DataParallel(model, device_ids=range(args.NUM_GPU))
-                model = getattr(model, precision)()
-                model = model.to("cuda")
-                model.eval()
-                
-                print(f"Benchmarking Inference {precision} precision type {model_name} ")
+                if model_name not in black_list:
+                    model = getattr(model_type, model_name)(pretrained=False)
+                    if args.NUM_GPU > 1:
+                        model = nn.DataParallel(model, device_ids=range(args.NUM_GPU))
+                    model = getattr(model, precision)()
+                    model = model.to("cuda")
+                    model.eval()
+                    
+                    print(f"Benchmarking Inference {precision} precision type {model_name} ")
 
-                if profile:
-                    path_log = './' + args.folder + '/' + model_name + '/inference/' + precision + '/stack_memory'
-                    Path(path_log).mkdir(parents=True, exist_ok=True)
-                    with torch.profiler.profile(
-                        activities=[
-                            torch.profiler.ProfilerActivity.CPU,
-                            torch.profiler.ProfilerActivity.CUDA],
-                        schedule=torch.profiler.schedule(
-                            wait=0, # skip first few training steps
-                            warmup=args.WARM_UP, # reach steady and skip few layers, profiling happens ignores results
-                            active=args.NUM_TEST), # only profile NUM_TEST steps - allows to focus and skip some layers for reducing overhead(even in prod)
-                        on_trace_ready=torch.profiler.tensorboard_trace_handler(path_log),
-                        record_shapes=True,
-                        profile_memory=True,
-                        with_stack=True
-                    ) as p:
-                        durations = inference_steps(model, precision, p)
-                else:
-                    durations = inference_steps(model, precision)
+                    if profile:
+                        path_log = './' + args.folder + '/' + model_name + '/inference/' + precision + '/stack_memory'
+                        Path(path_log).mkdir(parents=True, exist_ok=True)
+                        with torch.profiler.profile(
+                            activities=[
+                                torch.profiler.ProfilerActivity.CPU,
+                                torch.profiler.ProfilerActivity.CUDA],
+                            schedule=torch.profiler.schedule(
+                                wait=0, # skip first few training steps
+                                warmup=args.WARM_UP, # reach steady and skip few layers, profiling happens ignores results
+                                active=args.NUM_TEST), # only profile NUM_TEST steps - allows to focus and skip some layers for reducing overhead(even in prod)
+                            on_trace_ready=torch.profiler.tensorboard_trace_handler(path_log),
+                            record_shapes=True,
+                            profile_memory=True,
+                            with_stack=True
+                        ) as p:
+                            durations = inference_steps(model, precision, p)
+                    else:
+                        durations = inference_steps(model, precision)
 
-                del model
-                benchmark[model_name] = durations
-                print(f"{model_name} model average inference time : {sum(durations)/len(durations)}ms")
+                    del model
+                    benchmark[model_name] = durations
+                    print(f"{model_name} model average inference time : {sum(durations)/len(durations)}ms")
                 
     return benchmark
 
