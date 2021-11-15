@@ -1,4 +1,7 @@
-"""Compare speed of different models with batch size 12"""
+"""Compare speed of different models"""
+"""Code from https://github.com/ryujaehun/pytorch-gpu-benchmark"""
+"""Add options to use PyTorch Profiler"""
+
 import torch
 import torchvision.models as models
 import platform
