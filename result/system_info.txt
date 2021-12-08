@@ -1,0 +1,14 @@
+benchmark start : 2021/11/17 08:29:55
+system_configs
+
+uname_result(system='Linux', node='96-76-203-7', release='4.15.0-46-generic', version='#49~16.04.1-Ubuntu SMP Tue Feb 12 17:45:24 UTC 2019', machine='x86_64', processor='x86_64')
+                     scpufreq(current=3311.9890000000005, min=0.0, max=0.0)
+                    cpu_count: 8
+                    memory_available: 26690752512
+gpu_configs
+
+Number of GPUs on current device : 4
+CUDA Version : 10.2
+Cudnn Version : 7605
+Device Name : NVIDIA GeForce GTX 1080 Ti
+benchmark end : 2021/11/17 08:32:25

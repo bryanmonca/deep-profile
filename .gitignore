@@ -2,4 +2,5 @@
 data/*
 log/*
 .ipynb_checkpoints/*
-result/*
+# result/*
+.DS_Store
